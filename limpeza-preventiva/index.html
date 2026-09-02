@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema simples e eficaz para controle de limpeza preventiva de computadores e ativos de TI.">
+    <title>Controle de Limpeza Preventiva de Ativos</title>
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+    <!-- Cabeçalho & Menu Superior -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-icon">💻</div>
+                <div>
+                    <h1 class="brand-title">Limpeza Preventiva</h1>
+                    <span class="brand-subtitle">Gestão de Ativos & Manutenção de TI</span>
+                </div>
+            </div>
+
+            <nav class="main-nav" aria-label="Navegação Principal">
+                <button class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+                    📊 Dashboard
+                </button>
+                <button class="nav-item" data-tab="computadores" id="nav-computadores">
+                    🖥️ Computadores
+                </button>
+                <button class="nav-item" data-tab="historico" id="nav-historico">
+                    📜 Histórico
+                </button>
+            </nav>
+
+            <div class="header-actions">
+                <button class="btn btn-sm btn-primary" id="btn-novo-pc-header">
+                    + Novo Ativo
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="app-main">
+
+        <!-- ===================================================================
+             1. ABA: DASHBOARD
+             =================================================================== -->
+        <section id="tab-dashboard" class="tab-pane active">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Visão Geral</h2>
+                    <p class="section-description">Acompanhamento do status de manutenção da frota de computadores.</p>
+                </div>
+            </div>
+
+            <!-- Cards de Métricas (KPIs) -->
+            <div class="kpi-grid">
+                <div class="kpi-card total">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Total de Ativos</span>
+                        <span class="kpi-value" id="kpi-total">0</span>
+                    </div>
+                    <div class="kpi-icon-box">💻</div>
+                </div>
+
+                <div class="kpi-card atrasado">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Atrasados</span>
+                        <span class="kpi-value" id="kpi-atrasados" style="color: var(--status-atrasado-text);">0</span>
+                    </div>
+                    <div class="kpi-icon-box">🔴</div>
+                </div>
+
+                <div class="kpi-card proximo">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Próximos (15 dias)</span>
+                        <span class="kpi-value" id="kpi-proximos" style="color: var(--status-proximo-text);">0</span>
+                    </div>
+                    <div class="kpi-icon-box">🟡</div>
+                </div>
+
+                <div class="kpi-card em-dia">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Limpezas em Dia</span>
+                        <span class="kpi-value" id="kpi-em-dia" style="color: var(--status-em-dia-text);">0</span>
+                    </div>
+                    <div class="kpi-icon-box">🟢</div>
+                </div>
+
+                <div class="kpi-card pendente">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Pendentes / Sem Data</span>
+                        <span class="kpi-value" id="kpi-pendentes">0</span>
+                    </div>
+                    <div class="kpi-icon-box">⚪</div>
+                </div>
+            </div>
+
+            <!-- Card Destaque: PRÓXIMO PC A LIMPAR -->
+            <div class="spotlight-card" id="spotlight-card">
+                <div class="spotlight-header">
+                    <div class="spotlight-tag">
+                        <span>🎯</span> PRÓXIMO PC A LIMPAR (MAIOR PRIORIDADE)
+                    </div>
+                    <div id="spotlight-status-badge"></div>
+                </div>
+                
+                <div class="spotlight-content" id="spotlight-content">
+                    <div class="spotlight-meta-item">
+                        <span class="spotlight-label">Nome do PC</span>
+                        <span class="spotlight-val" id="spotlight-nome">-</span>
+                    </div>
+                    <div class="spotlight-meta-item">
+                        <span class="spotlight-label">Patrimônio / Ativo</span>
+                        <span class="spotlight-val mono" id="spotlight-ativo">-</span>
+                    </div>
+                    <div class="spotlight-meta-item">
+                        <span class="spotlight-label">Setor</span>
+                        <span class="spotlight-val" id="spotlight-setor">-</span>
+                    </div>
+                    <div class="spotlight-meta-item">
+                        <span class="spotlight-label">Responsável</span>
+                        <span class="spotlight-val" id="spotlight-responsavel">-</span>
+                    </div>
+                    <div class="spotlight-meta-item">
+                        <span class="spotlight-label">Data Prevista</span>
+                        <span class="spotlight-val" id="spotlight-data">-</span>
+                    </div>
+                    <div class="spotlight-actions">
+                        <button class="btn btn-success" id="spotlight-btn-limpar">
+                            🧹 REGISTRAR LIMPEZA
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             2. ABA: COMPUTADORES
+             =================================================================== -->
+        <section id="tab-computadores" class="tab-pane">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Controle de Computadores</h2>
+                    <p class="section-description">Lista completa dos ativos cadastrados e status individual de limpeza.</p>
+                </div>
+                <button class="btn btn-primary" id="btn-novo-pc">
+                    + Cadastrar Computador
+                </button>
+            </div>
+
+            <!-- Barra de Ferramentas: Pesquisa e Filtros -->
+            <div class="toolbar">
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="input-pesquisa" class="search-input" placeholder="Pesquisar PC, IP, MAC, Ativo, Setor ou Responsável...">
+                </div>
+
+                <div class="filter-pills" id="filter-pills">
+                    <button class="pill-btn active" data-filter="todos">TODOS (<span id="count-todos">0</span>)</button>
+                    <button class="pill-btn" data-filter="atrasado">🔴 ATRASADOS (<span id="count-atrasados">0</span>)</button>
+                    <button class="pill-btn" data-filter="proximo">🟡 PRÓXIMOS (<span id="count-proximos">0</span>)</button>
+                    <button class="pill-btn" data-filter="em_dia">🟢 EM DIA (<span id="count-em-dia">0</span>)</button>
+                    <button class="pill-btn" data-filter="pendente">⚪ PENDENTES (<span id="count-pendentes">0</span>)</button>
+                </div>
+            </div>
+
+            <!-- Tabela de Computadores -->
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="data-table" id="table-computadores">
+                        <thead>
+                            <tr>
+                                <th>PC</th>
+                                <th>IP</th>
+                                <th>MAC</th>
+                                <th>Ativo</th>
+                                <th>Setor</th>
+                                <th>Responsável</th>
+                                <th>Última Limpeza</th>
+                                <th>Próxima Limpeza</th>
+                                <th>Status</th>
+                                <th class="text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-computadores">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================
+             3. ABA: HISTÓRICO
+             =================================================================== -->
+        <section id="tab-historico" class="tab-pane">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Histórico de Limpezas</h2>
+                    <p class="section-description">Registro de todas as manutenções preventivas realizadas na empresa.</p>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="data-table" id="table-historico">
+                        <thead>
+                            <tr>
+                                <th style="width: 140px;">Data</th>
+                                <th>Computador</th>
+                                <th>Ativo</th>
+                                <th>Técnico / Responsável</th>
+                                <th>Observação Realizada</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-historico">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <span>Controle de Limpeza Preventiva &bull; Armazenamento local no navegador</span>
+            <div>
+                <button class="footer-link" id="btn-restaurar-dados">Restaurar Dados de Exemplo</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =======================================================================
+         MODAL 1: CADASTRAR / EDITAR COMPUTADOR
+         ======================================================================= -->
+    <div class="modal-overlay" id="modal-pc" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-pc-title">Cadastrar Computador</h3>
+                <button type="button" class="modal-close" data-close-modal="modal-pc">&times;</button>
+            </div>
+            <form id="form-pc">
+                <input type="hidden" id="pc-id">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="pc-nome">Nome do PC *</label>
+                            <input type="text" id="pc-nome" class="form-control" placeholder="Ex: FIN-DESK-01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="pc-ativo">Número do Ativo / Patrimônio *</label>
+                            <input type="text" id="pc-ativo" class="form-control" placeholder="Ex: PAT-00104" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="pc-ip">Endereço IP</label>
+                            <input type="text" id="pc-ip" class="form-control" placeholder="Ex: 192.168.1.100">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="pc-mac">Endereço MAC</label>
+                            <input type="text" id="pc-mac" class="form-control" placeholder="Ex: AA:BB:CC:DD:EE:FF">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="pc-setor">Setor / Departamento</label>
+                            <input type="text" id="pc-setor" class="form-control" placeholder="Ex: Financeiro">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="pc-responsavel">Nome do Usuário / Responsável</label>
+                            <input type="text" id="pc-responsavel" class="form-control" placeholder="Ex: Mariana Souza">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="pc-ultima-limpeza">Data da Última Limpeza</label>
+                            <input type="date" id="pc-ultima-limpeza" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="pc-proxima-limpeza">Data da Próxima Limpeza</label>
+                            <input type="date" id="pc-proxima-limpeza" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btn-excluir-pc" style="display: none;">
+                        🗑️ Excluir
+                    </button>
+                    <div class="modal-footer-actions">
+                        <button type="button" class="btn btn-secondary" data-close-modal="modal-pc">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Computador</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =======================================================================
+         MODAL 2: REGISTRAR LIMPEZA
+         ======================================================================= -->
+    <div class="modal-overlay" id="modal-limpeza" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Limpeza Preventiva</h3>
+                <button type="button" class="modal-close" data-close-modal="modal-limpeza">&times;</button>
+            </div>
+            <form id="form-limpeza">
+                <input type="hidden" id="limpeza-pc-id">
+                <div class="modal-body">
+                    <div style="margin-bottom: 1rem; padding: 0.75rem; background: var(--bg-alt); border-radius: var(--radius-sm);">
+                        <strong id="limpeza-pc-nome" style="color: var(--text-primary); font-size: 1rem;">-</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.15rem;">
+                            Patrimônio: <span id="limpeza-pc-ativo" class="mono">-</span> | Setor: <span id="limpeza-pc-setor">-</span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="limpeza-data">Data da Limpeza *</label>
+                            <input type="date" id="limpeza-data" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="limpeza-responsavel">Técnico / Responsável *</label>
+                            <input type="text" id="limpeza-responsavel" class="form-control" placeholder="Seu nome" required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="limpeza-proxima">Data da Próxima Limpeza *</label>
+                            <input type="date" id="limpeza-proxima" class="form-control" required>
+                            
+                            <div class="quick-presets">
+                                <span style="font-size: 0.75rem; color: var(--text-muted); align-self: center;">Definir prazo:</span>
+                                <button type="button" class="preset-btn" data-add-months="3">+3 Meses</button>
+                                <button type="button" class="preset-btn" data-add-months="6">+6 Meses (Recomendado)</button>
+                                <button type="button" class="preset-btn" data-add-months="12">+1 Ano</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="limpeza-obs">Observação / Procedimentos Realizados</label>
+                            <textarea id="limpeza-obs" class="form-control" placeholder="Ex: Despoeiramento geral, troca de pasta térmica, limpeza dos conectores e ventiladores."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div></div>
+                    <div class="modal-footer-actions">
+                        <button type="button" class="btn btn-secondary" data-close-modal="modal-limpeza">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Confirmar e Salvar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Container de Notificações Toast -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts da Aplicação -->
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
